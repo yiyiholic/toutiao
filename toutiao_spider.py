@@ -44,10 +44,32 @@ def get_images(json):
 						'image':image.get('url'),
 						'title':title
 					}
-			
+					
+def process_windows_title(title):
+	if "<" in title:
+		return title.replace("<","")
+	elif ">" in title:
+		return title.replace(">","")
+	elif "/" in title:
+		return title.replace("/","")
+	elif "\\" in title:
+		return title.replace("\\","")
+	elif "|" in title:
+		return title.replace("|","")
+	elif ":" in title:
+		return title.replace(":","")
+	elif "*" in title:
+		return title.replace("*","")
+	elif "?" in title:
+		return title.replace("?","")
+	else:
+		return title
+
 def save_image(item):
-	if not os.path.exists(item.get('title')):
-		os.mkdir(item.get('title'))
+	title = item.get('title')
+	title=process_windows_title(title)
+	if not os.path.exists(title):
+		os.mkdir(title)
 	try:
 		response=requests.get(item.get('image'))
 		if response.status_code==200:
@@ -60,7 +82,8 @@ def save_image(item):
 	except requests.ConnectionError:
 		print("Failed to Save Image")
 
-def main(offset):
+def main():
+	offset=input("Please input a number to start spider: ")
 	json = get_page(offset)
 	for item in get_images(json):
 		print(item)
@@ -76,4 +99,4 @@ def main(offset):
 		pool.close()
 		pool.join()
 		
-main(40)
+main()
